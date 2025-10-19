@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神っぽいなMV - 25時、ナイトコードで。</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%);
+            color: #e0e0ff;
+            line-height: 1.6;
+            overflow: hidden;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 神圣光芒背景 */
+        .divine-light {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .light-ray {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 255, 200, 0.1) 0%, transparent 70%);
+            animation: lightPulse 10s infinite alternate;
+        }
+
+        .light-ray:nth-child(2) {
+            animation-delay: -3s;
+            background: radial-gradient(circle at 30% 70%, rgba(200, 220, 255, 0.1) 0%, transparent 60%);
+        }
+
+        .light-ray:nth-child(3) {
+            animation-delay: -6s;
+            background: radial-gradient(circle at 70% 30%, rgba(220, 200, 255, 0.1) 0%, transparent 60%);
+        }
+
+        @keyframes lightPulse {
+            0% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+        }
+
+        /* 神圣粒子效果 */
+        .divine-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 220, 0.8);
+            border-radius: 50%;
+            animation: particleFloat 15s infinite linear;
+            opacity: 0;
+            box-shadow: 0 0 8px rgba(255, 255, 200, 0.5);
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px) rotate(180deg);
+                opacity: 0;
+            }
+        }
+
+        /* 视频播放器容器 */
+        .video-container {
+            background: rgba(30, 30, 60, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(200, 200, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow:
+                0 0 30px rgba(180, 180, 255, 0.5),
+                inset 0 0 20px rgba(200, 200, 255, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .video-container:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 0 40px rgba(200, 200, 255, 0.7),
+                inset 0 0 20px rgba(220, 220, 255, 0.3);
+        }
+
+        .video-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(200, 200, 255, 0.1), transparent);
+            transition: left 0.7s;
+        }
+
+        .video-container:hover::before {
+            left: 100%;
+        }
+
+        /* 标题样式 */
+        h1 {
+            font-size: 3rem;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(200, 200, 255, 0.7);
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            color: #c8c8ff;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        /* 视频播放器样式 */
+        video {
+            width: 100%;
+            max-width: 700px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(180, 180, 255, 0.5);
+            margin: 20px 0;
+            outline: none;
+            background: #000;
+        }
+
+        /* 自定义视频控件 */
+        .video-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+
+        .control-btn {
+            background: rgba(160, 160, 255, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(160, 160, 255, 0.9);
+            transform: scale(1.1);
+        }
+
+        /* 视频信息 */
+        .video-info {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(40, 40, 80, 0.5);
+            border-radius: 10px;
+            border-left: 3px solid #a0a0ff;
+        }
+
+        .video-info h2 {
+            color: #d0d0ff;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .video-info p {
+            color: #e8e8ff;
+            line-height: 1.5;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .video-container {
+                padding: 25px;
+            }
+
+            .video-controls {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* 光环效果 */
+        .halo {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            top: 0;
+            left: 0;
+            box-shadow: 0 0 0 0 rgba(200, 200, 255, 0.5);
+            animation: haloPulse 4s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes haloPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(200, 200, 255, 0.5);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(200, 200, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(200, 200, 255, 0);
+            }
+        }
+
+        /* 神圣几何图案 */
+        .sacred-geometry {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .geometry {
+            position: absolute;
+            border: 1px solid rgba(200, 200, 255, 0.3);
+            animation: geometryRotate 30s infinite linear;
+        }
+
+        .circle {
+            border-radius: 50%;
+            width: 300px;
+            height: 300px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 260px solid rgba(200, 200, 255, 0.2);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        @keyframes geometryRotate {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 神圣光芒背景 -->
+    <div class="divine-light">
+        <div class="light-ray"></div>
+        <div class="light-ray"></div>
+        <div class="light-ray"></div>
+    </div>
+
+    <!-- 神圣几何图案 -->
+    <div class="sacred-geometry">
+        <div class="geometry circle"></div>
+        <div class="geometry triangle"></div>
+    </div>
+
+    <!-- 神圣粒子效果 -->
+    <div class="divine-particles" id="divineParticles"></div>
+
+    <!-- 视频播放器 -->
+    <div class="video-container">
+        <div class="halo"></div>
+        <h1>神っぽいな</h1>
+        <div class="subtitle">25時、ナイトコードで。</div>
+
+        <video src="神っぽいな .mp4" controls></video>
+
+        <!-- 自定义控件 -->
+        <div class="video-controls">
+            <button class="control-btn" id="playBtn">▶</button>
+            <button class="control-btn" id="pauseBtn">❚❚</button>
+            <button class="control-btn" id="fullscreenBtn">⛶</button>
+        </div>
+
+        <div class="video-info">
+            <h2>MV情報</h2>
+            <p>「神っぽいな」のミュージックビデオは、25時、ナイトコードで。の神秘的な世界観を視覚的に表現した作品です。神聖で幻想的な雰囲気と、内面的な探求を描いた独特のビジュアルで、視聴者を非現実的な世界へと誘います。</p>
+        </div>
+    </div>
+
+    <script>
+        // 创建神圣粒子效果
+        function createDivineParticles() {
+            const particlesContainer = document.getElementById('divineParticles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                // 随机位置
+                const left = Math.random() * 100;
+                particle.style.left = `${left}vw`;
+
+                // 随机延迟和持续时间
+                const delay = Math.random() * 15;
+                const duration = 10 + Math.random() * 10;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+
+                // 随机大小
+                const size = 2 + Math.random() * 4;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 自定义视频控件功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.querySelector('video');
+            const playBtn = document.getElementById('playBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const container = document.querySelector('.video-container');
+
+            playBtn.addEventListener('click', function() {
+                video.play();
+                container.style.boxShadow =
+                    '0 0 50px rgba(200, 200, 255, 0.8), ' +
+                    'inset 0 0 30px rgba(220, 220, 255, 0.4)';
+            });
+
+            pauseBtn.addEventListener('click', function() {
+                video.pause();
+                container.style.boxShadow =
+                    '0 0 30px rgba(180, 180, 255, 0.5), ' +
+                    'inset 0 0 20px rgba(200, 200, 255, 0.2)';
+            });
+
+            fullscreenBtn.addEventListener('click', function() {
+                if (video.requestFullscreen) {
+                    video.requestFullscreen();
+                } else if (video.webkitRequestFullscreen) {
+                    video.webkitRequestFullscreen();
+                } else if (video.mozRequestFullScreen) {
+                    video.mozRequestFullScreen();
+                }
+            });
+
+            // 视频播放时增强效果
+            video.addEventListener('play', function() {
+                container.style.boxShadow =
+                    '0 0 50px rgba(200, 200, 255, 0.8), ' +
+                    'inset 0 0 30px rgba(220, 220, 255, 0.4)';
+            });
+
+            video.addEventListener('pause', function() {
+                container.style.boxShadow =
+                    '0 0 30px rgba(180, 180, 255, 0.5), ' +
+                    'inset 0 0 20px rgba(200, 200, 255, 0.2)';
+            });
+        });
+
+        // 页面加载完成后创建效果
+        window.addEventListener('DOMContentLoaded', createDivineParticles);
+    </script>
+</body>
+</html>

@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>25時、ナイトコードで</title>
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to top, #ffffff, #808080);
+            color: #333333;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* 25时乐队风格背景 - 灰白主题 */
+        .nightcord-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        /* 网络数据流效果 - 灰白 */
+        .data-stream {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(150, 150, 150, 0.7), transparent);
+            animation: dataFlow 8s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes dataFlow {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+        }
+
+        /* 音乐频谱效果 - 灰白 */
+        .music-bars {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 3px;
+        }
+
+        .music-bar {
+            width: 4px;
+            background: linear-gradient(to top, rgba(180, 180, 180, 0.8), rgba(150, 150, 150, 0.4));
+            border-radius: 2px 2px 0 0;
+            animation: musicPulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes musicPulse {
+            0%, 100% {
+                height: 10px;
+            }
+            50% {
+                height: 80px;
+            }
+        }
+
+        /* 时间数字效果 - 灰白 */
+        .time-digits {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-family: monospace;
+            font-size: 14px;
+            color: rgba(150, 150, 150, 0.3);
+            overflow: hidden;
+        }
+
+        .digit {
+            position: absolute;
+            animation: digitFall 15s linear infinite;
+        }
+
+        @keyframes digitFall {
+            0% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        /* 玻璃破碎背景效果 - 灰白 */
+        .glass-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .crack {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(150, 150, 150, 0.2), transparent);
+            transform-origin: center;
+            animation: crackAnimation 8s infinite alternate;
+        }
+
+        .crack:nth-child(1) {
+            top: 10%;
+            left: 15%;
+            width: 40%;
+            height: 2px;
+            transform: rotate(15deg);
+            animation-delay: 0s;
+        }
+
+        .crack:nth-child(2) {
+            top: 25%;
+            left: 5%;
+            width: 60%;
+            height: 2px;
+            transform: rotate(-10deg);
+            animation-delay: 1s;
+        }
+
+        .crack:nth-child(3) {
+            top: 50%;
+            left: 20%;
+            width: 50%;
+            height: 2px;
+            transform: rotate(25deg);
+            animation-delay: 2s;
+        }
+
+        .crack:nth-child(4) {
+            top: 70%;
+            left: 10%;
+            width: 45%;
+            height: 2px;
+            transform: rotate(-15deg);
+            animation-delay: 3s;
+        }
+
+        .crack:nth-child(5) {
+            top: 30%;
+            right: 10%;
+            width: 35%;
+            height: 2px;
+            transform: rotate(20deg);
+            animation-delay: 4s;
+        }
+
+        .crack:nth-child(6) {
+            top: 60%;
+            right: 5%;
+            width: 55%;
+            height: 2px;
+            transform: rotate(-25deg);
+            animation-delay: 5s;
+        }
+
+        @keyframes crackAnimation {
+            0% {
+                opacity: 0.3;
+                background: linear-gradient(90deg, transparent, rgba(150, 150, 150, 0.2), transparent);
+            }
+            50% {
+                opacity: 0.7;
+                background: linear-gradient(90deg, transparent, rgba(180, 180, 180, 0.4), transparent);
+            }
+            100% {
+                opacity: 0.4;
+                background: linear-gradient(90deg, transparent, rgba(120, 120, 120, 0.3), transparent);
+            }
+        }
+
+        /* 内容容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 标题样式 - 灰白主题 */
+        header {
+            text-align: center;
+            padding: 40px 0;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: #333;
+            text-shadow: 0 0 10px rgba(150, 150, 150, 0.5);
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #909090, transparent);
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #909090, transparent);
+            margin: 30px 0;
+        }
+
+        /* 玻璃效果内容块 - 灰白主题 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(200, 200, 200, 0.5);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(200, 200, 200, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .glass-card:hover::before {
+            left: 100%;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(150, 150, 150, 0.2);
+        }
+
+        h2 {
+            color: #505050;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            border-bottom: 1px solid rgba(150, 150, 150, 0.3);
+            padding-bottom: 10px;
+        }
+
+        /* 成员介绍样式 - 灰白主题 - 上下各2块布局 */
+        .members {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .member-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .member {
+            background: rgba(240, 240, 240, 0.8);
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 3px solid #909090;
+            transition: transform 0.3s, padding-left 0.3s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .member:hover {
+            transform: translateX(5px);
+            padding-left: 180px; /* 为图片留出空间 */
+        }
+
+        .member h3 {
+            color: #404040;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            transition: color 0.3s;
+        }
+
+        .member:hover h3 {
+            color: #606060;
+        }
+
+        .member-role {
+            color: #707070;
+            font-style: italic;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .member p {
+            flex-grow: 1;
+        }
+
+        /* 角色图片弹出效果 */
+        .character-image {
+            position: absolute;
+            left: -160px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 140px;
+            height: 180px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: left 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #909090;
+            font-size: 0.9rem;
+        }
+
+        .member:hover .character-image {
+            left: 10px;
+        }
+
+        .character-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 链接样式 - 灰白主题 */
+        a {
+            color: #606060;
+            text-decoration: none;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #606060;
+            transition: width 0.3s;
+        }
+
+        a:hover {
+            color: #000;
+        }
+
+        a:hover::after {
+            width: 100%;
+        }
+
+        /* 浮动粒子效果 - 灰白 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(150, 150, 150, 0.6);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* 音乐控制按钮样式 */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .music-control svg {
+            width: 24px;
+            height: 24px;
+            fill: #606060;
+        }
+
+        /* 音频加载提示 */
+        .audio-permission {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .audio-permission.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .permission-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .permission-box h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .permission-box p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .permission-btn {
+            background: #606060;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .permission-btn:hover {
+            background: #404040;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .glass-card {
+                padding: 15px;
+            }
+
+            .member-row {
+                grid-template-columns: 1fr;
+            }
+
+            .member:hover {
+                padding-left: 20px; /* 在移动端移除图片弹出效果 */
+            }
+
+            .character-image {
+                display: none; /* 在移动端隐藏图片 */
+            }
+
+            .music-control {
+                bottom: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+            }
+
+            .music-control svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 25时乐队风格背景 -->
+    <div class="nightcord-bg">
+        <div class="time-digits" id="timeDigits"></div>
+        <div class="music-bars" id="musicBars"></div>
+    </div>
+
+    <!-- 玻璃破碎背景 -->
+    <div class="glass-bg">
+        <div class="crack"></div>
+        <div class="crack"></div>
+        <div class="crack"></div>
+        <div class="crack"></div>
+        <div class="crack"></div>
+        <div class="crack"></div>
+    </div>
+
+    <!-- 浮动粒子 -->
+    <div class="particles" id="particles"></div>
+
+    <!-- 音频元素 -->
+    <audio id="bgm" loop>
+        <source src="25时登入界面BGM.mp3" type="audio/mpeg">
+        您的浏览器不支持音频元素。
+    </audio>
+
+    <!-- 音频加载提示 -->
+    <div class="audio-permission" id="audioPermission">
+        <div class="permission-box">
+            <h3>欢迎来到</h3>
+            <p>25時、ナイトコードで</p>
+            <button class="permission-btn" id="enableAudio">进入</button>
+        </div>
+    </div>
+
+    <!-- 音乐控制按钮 -->
+    <div class="music-control" id="musicControl">
+        <svg id="playIcon" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+        </svg>
+        <svg id="pauseIcon" viewBox="0 0 24 24" style="display: none;">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+    </div>
+
+  <div class="container">
+        <header>
+            <h1>25時、ナイトコードで</h1>
+        </header>
+
+        <div class="glass-card">
+            <p>
+                成员由宵崎奏、朝比奈真冬、东云绘名、晓山瑞希组成。宵崎奏每天会透过语音聊天软件"Nightcord"和音乐社团的伙伴们交流作曲。虽然她们互不知道彼此的长相和姓名，但配合得还算默契。然而从某一天起，社团中的一个成员突然失去音讯。
+            </p>
+        </div>
+
+        <div class="glass-card">
+            <h2>成员介绍</h2>
+            <div class="members">
+                <!-- 第一行 - 上下各2块 -->
+                <div class="member-row">
+                    <div class="member">
+                        <div class="character-image">
+                <img src="宵崎奏封面.jpg" alt="宵崎奏" title="宵崎奏">
+            </div>
+                        <h3><a href="宵崎奏简介.html">宵崎奏</a> (Yoisaki Kanade)</h3>
+                        <span class="member-role">角色：作曲 & 编曲</span>
+                        <p>团体的创始人和核心。为了创作出能「拯救人心」的歌曲而组建了这个团体。她几乎不出门，生活极其不规律，靠吃营养果冻度日。性格温柔但有些脱离现实，将全部生命倾注于音乐之中。她的目标是创作出能像当年拯救她一样拯救他人的歌曲。</p>
+                    </div>
+
+                    <div class="member">
+                        <div class="character-image">
+                <img src="朝比奈真冬封面.jpg" alt="朝比奈真冬" title="朝比奈真冬">
+            </div>
+                        <h3><a href="朝比奈真冬简介.html">朝比奈真冬</a>  (Asahina Mafuyu)</h3>
+                        <span class="member-role">角色：作词 & 主唱</span>
+                        <p>在学校是成绩优异、待人温和的完美优等生，但内心却感到极度空虚和迷茫，失去了真实的「自我」。她的歌词尖锐地反映了她内心的黑暗、痛苦和对真实的渴望。她的歌声空灵而富有穿透力，极具特色。</p>
+                    </div>
+                </div>
+
+                <!-- 第二行 - 上下各2块 -->
+                <div class="member-row">
+                    <div class="member">
+                        <div class="character-image">
+                <img src="东云绘名封面.jpg" alt="东云绘名" title="东云绘名">
+            </div>
+                        <h3><a href="东云绘名简介.html">东云绘名</a>(Shinonome Ena)</h3>
+                        <span class="member-role">角色：插画 & PV制作</span>
+                        <p>一位梦想成为职业画家的少女。性格好强且直率，对自己的画技有着极高的要求，但也因此经常陷入自我厌恶和瓶颈期。她与父亲在人生道路上的冲突也是其故事线的重要部分。虽然嘴上不饶人，但其实非常重视同伴。</p>
+                    </div>
+
+                    <div class="member">
+                         <div class="character-image">
+                <img src="晓山瑞希封面.jpg" alt="晓山瑞希" title="晓山瑞希">
+            </div>
+                        <h3><a href="晓山瑞希简介.html">晓山瑞希</a>(Akiyama Mizuki)</h3>
+                        <span class="member-role">角色：视频编辑 & 运营</span>
+                        <p>负责将团队的作品整合并编辑成精彩的MV。她时尚、开朗、善于社交，是团队中的气氛调节者。然而，她也有着关于自己性别认同的深刻烦恼和秘密，在阳光下和阴影下展现出不同的面貌。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h2>音乐风格</h2>
+            <p>「25時、ナイトコードで。」的音乐风格以忧郁的电子音乐为主基调，融合了Future Bass、Dubstep、Glitch等多种电子流派。音乐氛围通常黑暗、迷幻而富有层次感，与她们探讨内心黑暗的歌词相得益彰。</p>
+        </div>
+
+        <div class="glass-card">
+            <h2>MV风格</h2>
+            <p>在虚拟演唱会上，她们的演出舞台设计也常常充满网络、数据、破碎感等元素，视觉冲击力极强。</p>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const bgm = document.getElementById('bgm');
+        const audioPermission = document.getElementById('audioPermission');
+        const enableAudioBtn = document.getElementById('enableAudio');
+        const musicControl = document.getElementById('musicControl');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+
+        // 创建浮动粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                // 随机位置和大小
+                const size = Math.random() * 3 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}vw`;
+
+                // 随机延迟和持续时间
+                const delay = Math.random() * 15;
+                const duration = 10 + Math.random() * 10;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+
+                // 随机灰度
+                const grayValue = 120 + Math.random() * 80;
+                particle.style.background = `rgba(${grayValue}, ${grayValue}, ${grayValue}, 0.6)`;
+
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 创建时间数字效果
+        function createTimeDigits() {
+            const timeDigitsContainer = document.getElementById('timeDigits');
+            const digitCount = 50;
+
+            for (let i = 0; i < digitCount; i++) {
+                const digit = document.createElement('div');
+                digit.classList.add('digit');
+                digit.textContent = Math.floor(Math.random() * 2); // 显示0或1
+
+                // 随机位置
+                const left = Math.random() * 100;
+                digit.style.left = `${left}vw`;
+
+                // 随机延迟和持续时间
+                const delay = Math.random() * 15;
+                const duration = 10 + Math.random() * 10;
+                digit.style.animationDelay = `${delay}s`;
+                digit.style.animationDuration = `${duration}s`;
+
+                timeDigitsContainer.appendChild(digit);
+            }
+        }
+
+        // 创建音乐频谱效果
+        function createMusicBars() {
+            const musicBarsContainer = document.getElementById('musicBars');
+            const barCount = 50;
+
+            for (let i = 0; i < barCount; i++) {
+                const bar = document.createElement('div');
+                bar.classList.add('music-bar');
+
+                // 随机延迟
+                const delay = Math.random() * 1.5;
+                bar.style.animationDelay = `${delay}s`;
+
+                // 随机灰度
+                const grayValue = 120 + Math.random() * 80;
+                bar.style.background = `linear-gradient(to top, rgba(${grayValue}, ${grayValue}, ${grayValue}, 0.8), rgba(${grayValue-50}, ${grayValue-50}, ${grayValue-50}, 0.4))`;
+
+                musicBarsContainer.appendChild(bar);
+            }
+        }
+
+        // 创建数据流效果
+        function createDataStreams() {
+            const nightcordBg = document.querySelector('.nightcord-bg');
+            const streamCount = 8;
+
+            for (let i = 0; i < streamCount; i++) {
+                const stream = document.createElement('div');
+                stream.classList.add('data-stream');
+
+                // 随机位置
+                const left = Math.random() * 100;
+                stream.style.left = `${left}vw`;
+
+                // 随机延迟和持续时间
+                const delay = Math.random() * 8;
+                const duration = 5 + Math.random() * 5;
+                stream.style.animationDelay = `${delay}s`;
+                stream.style.animationDuration = `${duration}s`;
+
+                nightcordBg.appendChild(stream);
+            }
+        }
+
+        // 音频控制函数
+        function toggleMusic() {
+            if (bgm.paused) {
+                bgm.play().then(() => {
+                    playIcon.style.display = 'none';
+                    pauseIcon.style.display = 'block';
+                }).catch(error => {
+                    console.error('播放失败:', error);
+                });
+            } else {
+                bgm.pause();
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+            }
+        }
+
+        // 页面加载完成后创建效果
+        window.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            createTimeDigits();
+            createMusicBars();
+            createDataStreams();
+
+            // 尝试自动播放背景音乐
+            bgm.play().then(() => {
+                // 成功播放，隐藏权限请求
+                audioPermission.classList.remove('active');
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+            }).catch(error => {
+                // 播放失败，显示权限请求
+                console.log('自动播放被阻止，需要用户交互');
+                audioPermission.classList.add('active');
+            });
+
+            // 启用音频按钮点击事件
+            enableAudioBtn.addEventListener('click', () => {
+                bgm.play().then(() => {
+                    audioPermission.classList.remove('active');
+                    playIcon.style.display = 'none';
+                    pauseIcon.style.display = 'block';
+                }).catch(error => {
+                    console.error('播放失败:', error);
+                });
+            });
+
+            // 音乐控制按钮点击事件
+            musicControl.addEventListener('click', toggleMusic);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>熱異常 - 25時、ナイトコードで。</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a0000 0%, #4a0000 50%, #1a0000 100%);
+            color: #ffe0e0;
+            line-height: 1.6;
+            overflow: hidden;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 热浪扭曲背景 */
+        .heat-distortion {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .heat-wave {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(255, 100, 0, 0.2), transparent);
+            animation: heatWave 8s infinite linear;
+            filter: blur(5px);
+        }
+
+        .heat-wave:nth-child(2) {
+            animation-delay: -4s;
+            background: linear-gradient(to bottom, transparent, rgba(255, 50, 0, 0.15), transparent);
+        }
+
+        @keyframes heatWave {
+            0% {
+                transform: translateY(-100%) scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(100%) scale(1.2);
+                opacity: 0.5;
+            }
+        }
+
+        /* 火焰粒子效果 */
+        .flame-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .flame {
+            position: absolute;
+            width: 6px;
+            height: 12px;
+            background: linear-gradient(to top, #ff3300, #ff9900);
+            border-radius: 50% 50% 20% 20%;
+            bottom: 0;
+            animation: flameFloat 10s infinite linear;
+            filter: blur(1px);
+            opacity: 0;
+        }
+
+        @keyframes flameFloat {
+            0% {
+                transform: translateY(0) scale(0.5) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1.5) rotate(180deg);
+                opacity: 0;
+            }
+        }
+
+        /* 视频播放器容器 */
+        .video-container {
+            background: rgba(60, 10, 10, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 100, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow:
+                0 0 30px rgba(255, 50, 0, 0.5),
+                inset 0 0 20px rgba(255, 100, 0, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .video-container:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 0 40px rgba(255, 50, 0, 0.7),
+                inset 0 0 20px rgba(255, 100, 0, 0.3);
+        }
+
+        .video-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 100, 0, 0.1), transparent);
+            transition: left 0.7s;
+        }
+
+        .video-container:hover::before {
+            left: 100%;
+        }
+
+        /* 标题样式 */
+        h1 {
+            font-size: 3rem;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255, 100, 0, 0.7);
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            color: #ffb380;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        /* 视频播放器样式 */
+        video {
+            width: 100%;
+            max-width: 700px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 50, 0, 0.5);
+            margin: 20px 0;
+            outline: none;
+            background: #000;
+        }
+
+        /* 自定义视频控件 */
+        .video-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+
+        .control-btn {
+            background: rgba(255, 100, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 100, 0, 0.9);
+            transform: scale(1.1);
+        }
+
+        /* 歌曲信息 */
+        .video-info {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(80, 20, 20, 0.5);
+            border-radius: 10px;
+            border-left: 3px solid #ff5500;
+        }
+
+        .video-info h2 {
+            color: #ffb380;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .video-info p {
+            color: #ffcccc;
+            line-height: 1.5;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .video-container {
+                padding: 25px;
+            }
+
+            .video-controls {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* 脉冲效果 */
+        .pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            top: 0;
+            left: 0;
+            box-shadow: 0 0 0 0 rgba(255, 100, 0, 0.7);
+            animation: pulse 3s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 100, 0, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 20px rgba(255, 100, 0, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 100, 0, 0);
+            }
+        }
+
+        /* 热异常视觉效果 */
+        .heat-anomaly {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            filter: blur(2px);
+            opacity: 0.1;
+        }
+
+        .anomaly {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 50, 0, 0.8) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: anomalyPulse 5s infinite alternate;
+        }
+
+        @keyframes anomalyPulse {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 0.1;
+            }
+            100% {
+                transform: scale(1.5) rotate(180deg);
+                opacity: 0.3;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 热浪扭曲背景 -->
+    <div class="heat-distortion">
+        <div class="heat-wave"></div>
+        <div class="heat-wave"></div>
+    </div>
+
+    <!-- 热异常视觉效果 -->
+    <div class="heat-anomaly">
+        <div class="anomaly" style="top: 10%; left: 10%;"></div>
+        <div class="anomaly" style="top: 60%; left: 80%;"></div>
+        <div class="anomaly" style="top: 80%; left: 20%;"></div>
+    </div>
+
+    <!-- 火焰粒子效果 -->
+    <div class="flame-particles" id="flameParticles"></div>
+
+    <!-- 视频播放器 -->
+    <div class="video-container">
+        <div class="pulse"></div>
+        <h1>熱異常</h1>
+        <div class="subtitle">25時、ナイトコードで。</div>
+
+        <video src="熱異常.mp4" controls></video>
+
+        <!-- 自定义控件 -->
+        <div class="video-controls">
+            <button class="control-btn" id="playBtn">▶</button>
+            <button class="control-btn" id="pauseBtn">❚❚</button>
+            <button class="control-btn" id="fullscreenBtn">⛶</button>
+        </div>
+
+        <div class="video-info">
+            <h2>MV情報</h2>
+            <p>「熱異常」のミュージックビデオは、25時、ナイトコードで。の世界観を視覚的に表現した作品です。熱く歪んだ世界観と激しい感情の移り変わりを、独特のビジュアルで描き出しています。</p>
+        </div>
+    </div>
+
+    <script>
+        // 创建火焰粒子效果
+        function createFlameParticles() {
+            const flameContainer = document.getElementById('flameParticles');
+            const flameCount = 40;
+
+            for (let i = 0; i < flameCount; i++) {
+                const flame = document.createElement('div');
+                flame.classList.add('flame');
+
+                // 随机位置
+                const left = Math.random() * 100;
+                flame.style.left = `${left}vw`;
+
+                // 随机延迟和持续时间
+                const delay = Math.random() * 10;
+                const duration = 8 + Math.random() * 7;
+                flame.style.animationDelay = `${delay}s`;
+                flame.style.animationDuration = `${duration}s`;
+
+                // 随机大小
+                const width = 4 + Math.random() * 8;
+                const height = 8 + Math.random() * 16;
+                flame.style.width = `${width}px`;
+                flame.style.height = `${height}px`;
+
+                flameContainer.appendChild(flame);
+            }
+        }
+
+        // 自定义视频控件功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.querySelector('video');
+            const playBtn = document.getElementById('playBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const container = document.querySelector('.video-container');
+
+            playBtn.addEventListener('click', function() {
+                video.play();
+                container.style.boxShadow =
+                    '0 0 50px rgba(255, 50, 0, 0.8), ' +
+                    'inset 0 0 30px rgba(255, 100, 0, 0.4)';
+            });
+
+            pauseBtn.addEventListener('click', function() {
+                video.pause();
+                container.style.boxShadow =
+                    '0 0 30px rgba(255, 50, 0, 0.5), ' +
+                    'inset 0 0 20px rgba(255, 100, 0, 0.2)';
+            });
+
+            fullscreenBtn.addEventListener('click', function() {
+                if (video.requestFullscreen) {
+                    video.requestFullscreen();
+                } else if (video.webkitRequestFullscreen) {
+                    video.webkitRequestFullscreen();
+                } else if (video.mozRequestFullScreen) {
+                    video.mozRequestFullScreen();
+                }
+            });
+
+            // 视频播放时增强效果
+            video.addEventListener('play', function() {
+                container.style.boxShadow =
+                    '0 0 50px rgba(255, 50, 0, 0.8), ' +
+                    'inset 0 0 30px rgba(255, 100, 0, 0.4)';
+            });
+
+            video.addEventListener('pause', function() {
+                container.style.boxShadow =
+                    '0 0 30px rgba(255, 50, 0, 0.5), ' +
+                    'inset 0 0 20px rgba(255, 100, 0, 0.2)';
+            });
+        });
+
+        // 页面加载完成后创建效果
+        window.addEventListener('DOMContentLoaded', createFlameParticles);
+    </script>
+</body>
+</html>

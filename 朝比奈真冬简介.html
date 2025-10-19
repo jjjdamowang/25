@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>朝比奈真冬 - 25時、ナイトコードで。</title>
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Yu Gothic', 'Meiryo', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a14 0%, #1a1a2a 50%, #0a0a14 100%);
+            color: #e0e0ff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* 冰晶/雪花背景 */
+        .snowflakes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .snowflake {
+            position: absolute;
+            background: rgba(180, 220, 255, 0.7);
+            border-radius: 50%;
+            animation: snowFall 15s linear infinite;
+        }
+
+        @keyframes snowFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 内容容器 */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 标题样式 */
+        header {
+            text-align: center;
+            padding: 40px 0 20px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(120, 180, 255, 0.7);
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #78b4ff, transparent);
+        }
+
+        .subtitle {
+            color: #b8b8ff;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #78b4ff, transparent);
+            margin: 30px 0;
+        }
+
+        /* 内容卡片 */
+        .content-card {
+            background: rgba(20, 25, 40, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(120, 180, 255, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(120, 180, 255, 0.1), transparent);
+            transition: left 0.7s;
+        }
+
+        .content-card:hover::before {
+            left: 100%;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(120, 180, 255, 0.3);
+        }
+
+        h2 {
+            color: #c8c8ff;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            border-bottom: 1px solid rgba(120, 180, 255, 0.4);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        h2::before {
+            content: '❄';
+            margin-right: 10px;
+            color: #8888cc;
+        }
+
+        /* 图片样式 */
+        .character-image {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .character-image img {
+            max-width: 100%;
+            height: auto;
+            max-height: 500px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(120, 180, 255, 0.3);
+            transition: transform 0.3s;
+        }
+
+        .character-image img:hover {
+            transform: scale(1.02);
+        }
+
+        /* 人物简介样式 */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .profile-item {
+            background: rgba(35, 40, 60, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #8888cc;
+        }
+
+        .profile-label {
+            color: #b8b8ff;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* 人物关系样式 */
+        .relationships {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .relationship {
+            background: rgba(30, 35, 55, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s;
+            border-top: 2px solid rgba(120, 180, 255, 0.5);
+        }
+
+        .relationship:hover {
+            transform: translateY(-5px);
+        }
+
+        .relationship h3 {
+            color: #d8d8ff;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        /* 作品样式 */
+        .works {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .work-item {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(35, 40, 60, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+            border: 1px solid rgba(120, 180, 255, 0.3);
+        }
+
+        .work-item:hover {
+            transform: translateY(-5px);
+            background: rgba(45, 50, 70, 0.8);
+        }
+
+        .work-item h3 {
+            color: #d8d8ff;
+            margin-bottom: 10px;
+        }
+
+        /* 链接样式 */
+        a {
+            color: #c8c8ff;
+            text-decoration: none;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #c8c8ff;
+            transition: width 0.3s;
+        }
+
+        a:hover {
+            color: #fff;
+        }
+
+        a:hover::after {
+            width: 100%;
+        }
+
+        /* 双重性格视觉效果 */
+        .dual-personality {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .mask {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: maskFloat 20s infinite linear;
+            opacity: 0;
+        }
+
+        @keyframes maskFloat {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .content-card {
+                padding: 15px;
+            }
+
+            .profile-grid, .relationships {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 冰晶/雪花背景 -->
+    <div class="snowflakes" id="snowflakes"></div>
+
+    <!-- 双重性格视觉效果 -->
+    <div class="dual-personality" id="dualPersonality"></div>
+
+    <div class="container">
+        <header>
+            <h1>朝比奈真冬</h1>
+            <div class="subtitle">25時、ナイトコードで。</div>
+        </header>
+
+        <div class="content-card">
+            <p>朝比奈真冬是手机游戏《世界计划缤纷舞台！feat. 初音未来》中的虚拟角色，由佐藤日向配音。她是音乐团体"25時、ナイトコードで。"的作词与主唱。</p>
+            <p>表面上，真冬是成绩优异、待人温和的完美优等生，但内心却感到极度空虚和迷茫，失去了真实的「自我」。她的歌词尖锐地反映了她内心的黑暗、痛苦和对真实的渴望。她的歌声空灵而富有穿透力，极具特色。</p>
+            <p>真冬的内心矛盾源于她长期压抑真实情感，努力扮演他人眼中的"好孩子"角色。在加入"25時、ナイトコードで。"后，她开始通过音乐表达自己真实的内心世界，逐渐寻找失去的自我。</p>
+
+            <div class="character-image">
+                <img src="朝比奈真冬.jpg" alt="朝比奈真冬" title="朝比奈真冬">
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>人物简介</h2>
+            <div class="profile-grid">
+                <div class="profile-item">
+                    <div class="profile-label">姓名</div>
+                    <div>朝比奈真冬 (ASAHINA MAFUYU)</div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-label">配音</div>
+                    <div>佐藤日向</div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-label">性别</div>
+                    <div>女性</div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-label">生日</div>
+                    <div>12月27日</div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-label">学校</div>
+                    <div>宫益坂女子学院</div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-label">班级</div>
+                    <div>2年A组</div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-label">兴趣</div>
+                    <div>学习、观察他人、收集可爱的小物件</div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-label">特技</div>
+                    <div>快速学习、模仿他人</div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-label">不擅长、害怕的事物</div>
+                    <div>表达真实情感、被他人看穿内心</div>
+                </div>
+            </div>
+            <p style="margin-top:20px;">在学校是成绩优异、待人温和的完美优等生，但内心却感到极度空虚和迷茫，失去了真实的「自我」。她的歌词尖锐地反映了她内心的黑暗、痛苦和对真实的渴望。作为<a href="25時、ナイトコードで简介.html">"25時、ナイトコードで。"</a>的成员，主要负责作词与主唱。</p>
+        </div>
+
+        <div class="content-card">
+            <h2>人物关系</h2>
+            <div class="relationships">
+                <div class="relationship">
+                    <h3><a href="宵崎奏简介.html">宵崎奏</a> </h3>
+                    <p>社团成员。团体的创始人和核心作曲人。为了创作出能「拯救人心」的歌曲而组建了这个团体。她几乎不出门，生活极其不规律，将全部生命倾注于音乐之中。她的音乐帮助真冬表达内心的情感。</p>
+                </div>
+                <div class="relationship">
+                    <h3><a href="晓山瑞希简介.html">晓山瑞希</a></h3>
+                    <p>社团成员。负责将团队的作品整合并编辑成精彩的MV。她时尚、开朗、善于社交，是团队中的气氛调节者。她经常试图让真冬敞开心扉，表达真实感受。</p>
+                </div>
+                <div class="relationship">
+                    <h3><a href="东云绘名简介.html">东云绘名</a></h3>
+                    <p>社团成员。一位梦想成为职业画家的少女。性格好强且直率，对自己的画技有着极高的要求。虽然两人性格迥异，但绘名理解真冬在艺术表达上的挣扎。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2>代表作品</h2>
+            <div class="works">
+                <div class="work-item">
+                    <h3>音乐作品</h3>
+                    <p><a href="神っぽいな乐曲.html">神っぽいな</a></p>
+                </div>
+                <div class="work-item">
+                    <h3>MV作品</h3>
+                    <p><a href="神っぽいな MV.html">神っぽいな MV等</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 创建雪花效果
+        function createSnowflakes() {
+            const snowflakesContainer = document.getElementById('snowflakes');
+            const snowflakeCount = 50;
+
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+
+                // 随机大小
+                const size = Math.random() * 5 + 2;
+                snowflake.style.width = `${size}px`;
+                snowflake.style.height = `${size}px`;
+
+                // 随机位置
+                const left = Math.random() * 100;
+                snowflake.style.left = `${left}vw`;
+
+                // 随机延迟和持续时间
+                const delay = Math.random() * 15;
+                const duration = 10 + Math.random() * 10;
+                snowflake.style.animationDelay = `${delay}s`;
+                snowflake.style.animationDuration = `${duration}s`;
+
+                // 随机透明度
+                const opacity = 0.3 + Math.random() * 0.5;
+                snowflake.style.opacity = `${opacity}`;
+
+                snowflakesContainer.appendChild(snowflake);
+            }
+        }
+
+        // 创建双重性格视觉效果
+        function createMasks() {
+            const dualPersonalityContainer = document.getElementById('dualPersonality');
+            const maskCount = 15;
+
+            for (let i = 0; i < maskCount; i++) {
+                const mask = document.createElement('div');
+                mask.classList.add('mask');
+
+                // 随机位置
+                const left = Math.random() * 100;
+                mask.style.left = `${left}vw`;
+
+                // 随机延迟和持续时间
+                const delay = Math.random() * 20;
+                const duration = 15 + Math.random() * 15;
+                mask.style.animationDelay = `${delay}s`;
+                mask.style.animationDuration = `${duration}s`;
+
+                // 随机大小
+                const size = 50 + Math.random() * 100;
+                mask.style.width = `${size}px`;
+                mask.style.height = `${size}px`;
+
+                dualPersonalityContainer.appendChild(mask);
+            }
+        }
+
+        // 页面加载完成后创建效果
+        window.addEventListener('DOMContentLoaded', () => {
+            createSnowflakes();
+            createMasks();
+        });
+    </script>
+</body>
+</html>
